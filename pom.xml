@@ -42,5 +42,6 @@
             <artifactId>module-endscreen</artifactId>
             <version>${gamengine.version}</version>
         </dependency>
+        
     </dependencies>
 </project>

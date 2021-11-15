@@ -1,7 +1,33 @@
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.io.File;
+import java.io.FileNotFoundException;
+
+
 
 public class Agent1 {
+	
+	public static ArrayList<Integer> readFromFile(String inputPath) {
+		ArrayList<Integer> config = new ArrayList<>();
+		try {
+			File configFile = new File(inputPath);
+			Scanner reader = new Scanner(configFile);
+			String[] str_config = reader.nextLine().split(", ");
+			
+			for(String i : str_config) {
+				config.add(Integer.parseInt(i));
+			}
+			
+			reader.close();
+			
+		} catch (FileNotFoundException e) {
+			System.err.println("Error: while reading config file");
+			System.err.println(e);
+		}
+		
+		return config;
+	}
+	
     // This agent slows down from 200 to 50 when is at 4000 units before reaching the checkpoint
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -14,6 +40,12 @@ public class Agent1 {
         }
         double dist = 100000.0;
         int z = 0;
+    	
+        // Agent path for its configuration in project
+    	ArrayList<Integer> config2 = readFromFile("src/test/java/individuals_configurations/prueba2.txt");
+        
+    	// TODO Implements config[index] for each parameter in rules
+        
         while (true) {
             String s = scanner.nextLine();
             System.err.println(s);
