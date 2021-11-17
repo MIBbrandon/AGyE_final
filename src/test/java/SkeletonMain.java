@@ -2,7 +2,6 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-//import org.json.simple.JSONObject;
 
 import com.codingame.gameengine.runner.SoloGameRunner;
 import com.codingame.gameengine.runner.dto.GameResult;
@@ -14,7 +13,10 @@ public class SkeletonMain {
     public static void main(String[] args) {
         // Uncomment this section and comment the other one to create a Solo Game
     	int train = 3;
-    	
+    	int agentNumber = 1;
+    	System.out.println("Entré");
+		System.out.println(args[0]);
+
     	ArrayList<Integer> timeResults = new ArrayList<>();
     	ArrayList<ArrayList<Integer>> diffResults = new ArrayList<>();
     	
@@ -23,7 +25,8 @@ public class SkeletonMain {
     		/* Solo Game */
     		SoloGameRunner gameRunner = new SoloGameRunner();
     		// Sets the player
-    		gameRunner.setAgent(Agent1.class);
+    		Class<?> agentClass = setAgentClass(agentNumber);
+    		gameRunner.setAgent(agentClass);
     		// Sets a test case
     		gameRunner.setTestCase("test"+ Integer.toString(i) +".json");
     		
@@ -44,6 +47,18 @@ public class SkeletonMain {
     	
     	
     }
+
+	private static Class<?> setAgentClass(int agentNumber) {
+		Class<?> agentClass;
+		try {
+			agentClass = Class.forName("Agent" + agentNumber);
+		} catch (ClassNotFoundException e) {
+			System.err.println("Error: while loading class file");
+			System.err.println(e);
+			agentClass = Agent1.class;
+		}
+		return agentClass;
+	}
 
     /** Gets experiments results, storing it in a HashMap. Later it rewrite it to save in a json file
      * 
