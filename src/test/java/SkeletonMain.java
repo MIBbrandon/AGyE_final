@@ -17,8 +17,12 @@ public class SkeletonMain {
     	System.out.println("Entré");
 		System.out.println(args[0]);
 
-    	ArrayList<Integer> timeResults = new ArrayList<>();
+    	ArrayList<Float> timeResults = new ArrayList<>();
     	ArrayList<ArrayList<Integer>> diffResults = new ArrayList<>();
+
+		// for (int i =0; i < 1 ; i++) {
+		// 	i--;
+		// }
     	
 //    	for (int i = 0; i < 1; i++) {
     	for (int i = 0; i < train; i++) {
@@ -65,7 +69,7 @@ public class SkeletonMain {
      * @param timeResults
      * @param diffResults
      */
-	private static void saveResults(ArrayList<Integer> timeResults, ArrayList<ArrayList<Integer>> diffResults) {
+	private static void saveResults(ArrayList<Float> timeResults, ArrayList<ArrayList<Integer>> diffResults) {
 		HashMap<String, Object> gameResults = new HashMap<>();
     	gameResults.put("times", timeResults);
     	gameResults.put("steps", diffResults);
@@ -113,11 +117,11 @@ public class SkeletonMain {
 	 * @param mapNumber
 	 * @param gameResult
 	 */
-	private static void timeParser(ArrayList<Integer> timeResults, GameResult gameResult) {
+	private static void timeParser(ArrayList<Float> timeResults, GameResult gameResult) {
 		String time = gameResult.metadata;
 		String[] time_splited = time.substring(1, time.length()-2).split(":");
 		time_splited[1] = time_splited[1].substring(1, time_splited[1].length()-2);
-		timeResults.add((int) (Float.parseFloat(time_splited[1])));
+		timeResults.add(Float.parseFloat(time_splited[1]));
 	}
     
     
