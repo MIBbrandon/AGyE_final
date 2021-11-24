@@ -15,7 +15,7 @@ def init_experiment(rules_size):
         sigmas[i] = 150 - i
         individuals [0][i] = random.gauss(0,3000)
 
-    return individuals, sigmas
+    return individuals.astype(int), sigmas
 
 def save_individual(individual, output_path):
     output_fd = open(output_path, "w+") 
@@ -31,8 +31,6 @@ def fit_individual(result_path):
     agentData = json.load(agent)
 
     fitness = np.sum(agentData['times'])
-    print (fitness)
-
     return fitness
 
 def generate_individual(individual, sigmas):
@@ -42,25 +40,28 @@ def generate_individual(individual, sigmas):
     for i in range(length):
         new_individual[i] = random.gauss(0, sigmas[i]) + individual[i]
     
-    return new_individual
+    return new_individual.astype(int)
 
 
 
 
 if __name__ == '__main__':
     # Experiment hyper-params
-    test_instances = int(sys.argv[1])
-    max_epochs = int(sys.argv[2])
-    window_size = int(sys.argv[3])
-    c = float(sys.argv[4])
+    max_epochs = int(sys.argv[1])
+    window_size = int(sys.argv[2])
+    c = float(sys.argv[3])
 
     # Gets experiment identifier number to store it
     exp_number = fm.get_experiment_number()
 
     # TODO Fit paths to each computer or if need other configs
-    command_line = 'cd /home/cesar/Uni/AGE/practica_3/AGyE_final ; /usr/bin/env /usr/lib/jvm/java-11-openjdk-amd64/bin/java -Dfile.encoding=UTF-8 @/tmp/cp_bdsogc5enygwms1d94sew9uxb.argfile SkeletonMain'
-    argc_array = ' 1'
+    command_line = ''
+    args_array = [
+        ' 1',
+        ' 2'
+    ]
 
+    # Files' paths
     rules_size = 2
     files_config_path = [
         "./individuals_configurations/ag1.txt",
@@ -81,11 +82,12 @@ if __name__ == '__main__':
     counter = np.empty([window_size]).astype(int)
     index_counter = 0
     iteration, index_counter = 0, 0
+    best_iteration = 0
 
     # Start EE
     individuals, sigmas = init_experiment(rules_size)
     save_individual(individuals[0], files_config_path[0])
-    command = os.system(' 1')
+    os.system(command_line + args_array[0])
     result = fit_individual(files_result_path[0])
 
     try:
@@ -100,7 +102,7 @@ if __name__ == '__main__':
             # Children generation and evaluation
             individuals[1] = generate_individual(individuals[0], sigmas)
             save_individual(individuals[1], files_config_path[1])
-            command = os.system(command + ' 1')
+            os.system(command_line + args_array[1])
             new_result = fit_individual(files_result_path[1])
 
             # Better result update individual
@@ -109,6 +111,7 @@ if __name__ == '__main__':
                 individuals[0] = individuals[1]
                 print("New result: ",  new_result)
                 result = new_result
+                best_iteration = iteration
                 counter[index_counter % window_size] = 1
             else: 
                 counter[index_counter % window_size] = 0
@@ -142,7 +145,7 @@ if __name__ == '__main__':
         fm.save_to_csv(experiment, "exp_" + exp_number)
         
         # Saves a resume of experiment in solution file
-        individual_sol = [ exp_number, rules_size, result, iteration, max_epochs, window_size, c ]
+        individual_sol = [ exp_number, rules_size, result, best_iteration, iteration, max_epochs, window_size, c ]
         fm.save_to_sol_csv(individual_sol, "solutions")
 
         save_individual(individuals[0], files_config_path[2])
@@ -152,6 +155,6 @@ if __name__ == '__main__':
         fm.save_to_csv(experiment, "exp_" + exp_number)
         
         # Saves a resume of experiment in solution file
-        individual_sol = [ exp_number, rules_size, result, iteration, max_epochs, window_size, c ]
+        individual_sol = [ exp_number, rules_size, result, best_iteration, iteration, max_epochs, window_size, c ]
         fm.save_to_sol_csv(individual_sol, "solutions")
         save_individual(individuals[0], files_config_path[2])

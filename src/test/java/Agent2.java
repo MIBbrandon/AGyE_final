@@ -6,7 +6,7 @@ import java.io.FileNotFoundException;
 
 
 
-public class Agent1 {
+public class Agent2 {
 	
 	public static ArrayList<Integer> readFromFile(String inputPath) {
 		ArrayList<Integer> config = new ArrayList<>();
@@ -32,7 +32,7 @@ public class Agent1 {
     // This agent slows down from 200 to 50 when is at 4000 units before reaching the checkpoint
     public static void main(String[] args) {
         // TODO Change var for each copy
-        String filename = "ag1";
+        String filename = "ag2";
 
         Scanner scanner = new Scanner(System.in);
         int checkpoints = Integer.parseInt(scanner.nextLine());
