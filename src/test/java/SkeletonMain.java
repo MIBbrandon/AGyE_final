@@ -12,20 +12,18 @@ public class SkeletonMain {
 	
     public static void main(String[] args) {
         // Uncomment this section and comment the other one to create a Solo Game
-    	// int agentNumber = 2;
+    	int train = 1;
+    	int agentNumber = Integer.parseInt(args[0]);
+    	System.out.println("Entré");
+		System.out.println(args[0]);
 
-		int agentNumber = Integer.parseInt(args[0]);
-    	int train = 3;
-
-		// Store's variables
     	ArrayList<Float> timeResults = new ArrayList<>();
     	ArrayList<ArrayList<Integer>> diffResults = new ArrayList<>();
-		String filename = "ag" + agentNumber;
 
-		// TODO Get execution command
 		// for (int i =0; i < 1 ; i++) {
 		// 	i--;
 		// }
+    	boolean simulate = false;
     	
 //    	for (int i = 0; i < 1; i++) {
     	for (int i = 0; i < train; i++) {
@@ -40,17 +38,23 @@ public class SkeletonMain {
     		// Another way to add a player for python
     		// gameRunner.addAgent("python3 /home/user/player.py");
     		
-    		// Start the game server
-    		// gameRunner.start();
-    		// Simulate
-    		GameResult gr = gameRunner.simulate();
     		
-    		timeParser(timeResults, gr);
-    		stepsParser(diffResults, gr);
+    		// Simulate
+    		if (simulate) { 
+    			GameResult gr = gameRunner.simulate();
+    			timeParser(timeResults, gr);
+        		stepsParser(diffResults, gr);
+    		} else {
+    			// Start the game server
+        		gameRunner.start();
+    		}
+    		
+    		
     		
     	}
     	
-    	saveResults(timeResults, diffResults, filename);
+    	if (simulate) { saveResults(agentNumber, timeResults, diffResults);}
+    	
     	
     }
 
@@ -71,12 +75,12 @@ public class SkeletonMain {
      * @param timeResults
      * @param diffResults
      */
-	private static void saveResults(ArrayList<Float> timeResults, ArrayList<ArrayList<Integer>> diffResults, String filename) {
+	private static void saveResults(int agentNumber, ArrayList<Float> timeResults, ArrayList<ArrayList<Integer>> diffResults) {
 		HashMap<String, Object> gameResults = new HashMap<>();
     	gameResults.put("times", timeResults);
     	gameResults.put("steps", diffResults);
     	try {
-			FileOutputStream fos = new FileOutputStream("src/test/java/experiments/" + filename + ".json");
+			FileOutputStream fos = new FileOutputStream("src/test/java/experiments/ag" + agentNumber + ".json");
 			fos.write(gameResults.toString().replaceAll("=", ":").replaceAll(":", "\":").replace("{", "{\"").replace(" s", " \"s")
 					.getBytes());
 			fos.flush();
@@ -125,5 +129,6 @@ public class SkeletonMain {
 		time_splited[1] = time_splited[1].substring(1, time_splited[1].length()-2);
 		timeResults.add(Float.parseFloat(time_splited[1]));
 	}
+    
     
 }

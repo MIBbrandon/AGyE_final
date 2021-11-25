@@ -3,42 +3,42 @@ from numpy import random
 import datetime as dt
 import csv
 import json
+import os
+
 
 def save_to_csv(data_list, filename):
+    # Primero creamos el directorio si no existe ya
+    dir_path = 'csv_results/'
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path, 0o777)
     # Create new and unique csv file and its writer
-    csvfile = open("csv_results/" + filename + ".csv", "w", newline='')
-    wr = csv.writer(csvfile, dialect='excel', delimiter=',')
-    
-    # Write each row from data_list in csv file
-    for row in data_list:
-        wr.writerow(row)
+    with open(dir_path + filename + ".csv", "w", newline='') as csvfile:
+        wr = csv.writer(csvfile, dialect='excel', delimiter=',')
 
-    # Close csv file
-    csvfile.close()
+        # Write each row from data_list in csv file
+        for row in data_list:
+            wr.writerow(row)
+
 
 def save_to_sol_csv(row, filename):
     # Create new and unique csv file and its writer
-    csvfile = open(filename + ".csv", "a", newline='')
-    wr = csv.writer(csvfile, dialect='excel', delimiter=',')
-    
-    # Append the experiment final resume
-    wr.writerow(row)
+    with open(filename + ".csv", "a", newline='') as csvfile:
+        wr = csv.writer(csvfile, dialect='excel', delimiter=',')
 
-    # Close csv file
-    csvfile.close()
+        # Append the experiment final resume
+        wr.writerow(row)
+
 
 def get_experiment_number() -> str:
     filename = 'store.txt'
-    
+
     # Get from store the experiment number
-    store = open(filename, 'r')
-    exp_number = int(store.readline())
-    store.close()
+    with open(filename, 'r') as store:
+        exp_number = int(store.readline())
 
     # Increase the experiment number for next experiments
-    store = open(filename, 'w')
-    store.write(str(exp_number + 1))
-    store.close()
+    with open(filename, 'w') as store:
+        store.write(str(exp_number + 1))
 
     # Return the experiment number
     return str(exp_number)
