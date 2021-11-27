@@ -11,7 +11,7 @@ PARAMETER_RANGES = ((0.3, 1.2), (90, 110), (0.1, 5.0), (0.0001, 0.01), (1000, 30
 def init_experiment(rules_size, load_init_individual: str = ''):
     if not load_init_individual:  # If string is empty
         # Initialize the first individual with its sigmas vector
-        individuals = np.empty([len(PARAMETER_RANGES), rules_size])
+        individuals = np.empty([2, rules_size])
         sigmas = np.empty([rules_size])
 
         # TODO fit numbers
@@ -90,7 +90,7 @@ if __name__ == '__main__':
     }
 
     # Files' paths
-    rules_size = 3
+    rules_size = 10
     files_config_path = {
         'padre': "../../src/test/java/individuals_configurations/ag1.txt",
         'hijo': "../../src/test/java/individuals_configurations/ag2.txt",
@@ -113,7 +113,7 @@ if __name__ == '__main__':
     best_iteration = 0
 
     # Start EE
-    individuals, sigmas = init_experiment(rules_size, files_config_path['padre'])
+    individuals, sigmas = init_experiment(rules_size)
     save_individual(individuals[0], sigmas, files_config_path['padre'])
     # os.system(command_line + args_array['padre'])
     s = subprocess.check_output(args_array['padre'], shell=True, cwd=cwd)
