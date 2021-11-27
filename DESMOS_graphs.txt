@@ -1,0 +1,2 @@
+https://www.desmos.com/calculator/er1kjt9ncr  --> SIGMOID FOR THRUST
+https://www.desmos.com/calculator/rvxcdxffbu  --> SIGMOID FOR OFFSET
