@@ -12,7 +12,7 @@ public class SkeletonMain {
 	
     public static void main(String[] args) {
         // Uncomment this section and comment the other one to create a Solo Game
-    	int train = 1;
+    	int train = 3;
     	int agentNumber = Integer.parseInt(args[0]);
     	System.out.println("Entré");
 		System.out.println(args[0]);
@@ -23,7 +23,7 @@ public class SkeletonMain {
 		// for (int i =0; i < 1 ; i++) {
 		// 	i--;
 		// }
-    	boolean simulate = false;
+    	boolean simulate = true;
     	
 //    	for (int i = 0; i < 1; i++) {
     	for (int i = 0; i < train; i++) {
@@ -34,9 +34,10 @@ public class SkeletonMain {
     		gameRunner.setAgent(agentClass);
     		// Sets a test case
     		gameRunner.setTestCase("test"+ Integer.toString(i) +".json");
+//    		gameRunner.setTestCase("test2.json");
     		
     		// Another way to add a player for python
-    		// gameRunner.addAgent("python3 /home/user/player.py");
+    		// gameRunner.setAgent("python3 Agent1.py");
     		
     		
     		// Simulate

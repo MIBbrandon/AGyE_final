@@ -7,9 +7,9 @@ import java.io.FileNotFoundException;
 
 
 
-public class Agent2 {
+public class Agent_test {
 	
-	static int agentNum = 2;
+	static int agentNum = 1;
 	
 	public static ArrayList<Double> readFromFile(String inputPath) {
 		ArrayList<Double> config = new ArrayList<>();
@@ -161,22 +161,19 @@ public class Agent2 {
             // AGENT LOGIC
             
 
-            // Parameters we control
-            double focus_angle = config.get(0);  // Math.PI/2  Essentially the cone in which the checkpoint must be in wrt the velocity vector
-            double corrective_thrust = config.get(1);  // 100  The fixed amount of thrust used when correcting the velocity vector
+            // Parameters we control (a total of 7)
             
             // Offset related
-            
-            double scale_offset = config.get(2);  // 1   This must be adjusted depending on the value of the angles
-            double step_constant_offset = config.get(3);  // 0.002   Steepness (or rate of change)
-            double midpoint_val_offset = config.get(4); // 2000   Value of all_influences at which sigmoid result is half of max_offset
-            double max_offset = config.get(5);  // 600   Maximum offset allowed
+            double scale_offset = config.get(0);  // 10   This must be adjusted depending on the value of the angles
+            double step_constant_offset = config.get(1);  // 0.01   Steepness (or rate of change)
+            double midpoint_val_offset = config.get(2); // 900   Value of all_influences at which sigmoid result is half of max_offset
+            double max_offset = config.get(3);  // 600   Maximum offset allowed
             
             // Thrust related
-            double scale_thrust = config.get(6);  // 1   Scales all the influences accordingly
-            double step_constant_thrust = config.get(7);  // 0.005   Steepness (or rate of change)
-            double midpoint_val_thrust = config.get(8);  // 200   Value of all_influences at which sigmoid result is half of max_thrust
-            double max_thrust = config.get(9);  // 200 This one we will leave at maximum because we prefer to change other variables first
+            double scale_thrust = config.get(4);  // 1   Scales all the influences accordingly
+            double step_constant_thrust = config.get(5);  // 0.005   Steepness (or rate of change)
+            double midpoint_val_thrust = config.get(6);  // 224   Value of all_influences at which sigmoid result is half of max_thrust
+            double max_thrust = 200;  // 200 This one we will leave at maximum because we prefer to change other variables first
 
             // -- LOGIC --
             
@@ -184,16 +181,20 @@ public class Agent2 {
             
             // First, let's find the most efficient point to reach
             Point closest_point_current_to_second = get_closest_point_on_vector_to_point(current, second_checkpoint, first_checkpoint);
+            System.out.println("Closest point: " + closest_point_current_to_second.x + ", " + closest_point_current_to_second.y);
             dPoint checkpoint_to_closest = getVector(first_checkpoint, closest_point_current_to_second);
+            System.out.println("Checkpoint to closest: " + checkpoint_to_closest.x + ", " + checkpoint_to_closest.y);
             double distance_to_closest_point = magnitudeD(checkpoint_to_closest);
+            System.out.println("Magnitude: " + distance_to_closest_point);
             
             // Assuming that point is outside the checkpoint area, so we will use the point on the circumference that is closest
-        	dPoint rim_point = scale(normalizeVector(checkpoint_to_closest), 300);
+        	dPoint rim_point = scale(normalizeVector(checkpoint_to_closest), 400);
             Point new_first_checkpoint = new Point(first_checkpoint.x + (int) Math.round(rim_point.x), first_checkpoint.y + (int) Math.round(rim_point.y));
-            if (distance_to_closest_point <= 300) {
+            if (distance_to_closest_point <= 400) {
             	// Point is within the checkpoint area, so we will aim for that
             	new_first_checkpoint = closest_point_current_to_second;
             }
+            System.out.println("New checkpoint: " + new_first_checkpoint.x + ", " + new_first_checkpoint.y);
             
             
             // OFFSET
@@ -245,7 +246,7 @@ public class Agent2 {
             
             // The faster we are going, the less thrust we need to add
             double speed = magnitude(vx, vy);
-            double speed_influence = (1 / (1 + (speed/1000)));
+            double speed_influence = (1 / (1 + (speed/100)));
             
             // We multiply all the influences
             double all_thrust_influences = thrust_angle_influence * distance_to_next_target * scale_thrust;
@@ -270,7 +271,7 @@ public class Agent2 {
             double angle_vel_off_course = Math.abs(angle_to_next_checkpoint(velocity, current, new_first_checkpoint));
             
             // If the velocity isn't in a "cone of vision" of 45º to each side of the line current->first_checkpoint, it must be corrected.
-            if (angle_vel_off_course >= focus_angle/2 && speed > 40 && distance_influence > 400) {  // Below 40 speed is manageable
+            if (angle_vel_off_course >= Math.PI/4 && speed > 30 && distance_influence > 400) {  // Below 30 speed is manageable
             	final_point.x = current.x - vx;
             	final_point.y = current.y - vy;
             	
@@ -283,7 +284,7 @@ public class Agent2 {
             	final_point.x = final_point.x + (int) Math.round(correction.x);
             	final_point.y = final_point.y + (int) Math.round(correction.y);
             	
-            	thrust = corrective_thrust;
+            	thrust = 100;
             }
             
 //            System.out.println("Dir: " + dir_current_first.x + " " + dir_current_first.y);

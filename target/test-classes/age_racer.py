@@ -6,11 +6,12 @@ import numpy as np
 import random
 import json
 
+PARAMETER_RANGES = ((0.3, 1.2), (90, 110), (0.1, 5.0), (0.0001, 0.01), (1000, 3000), (400, 800), (0.1, 5.0), (0.0001, 0.01), (0, 400), (150, 210))
 
 def init_experiment(rules_size, load_init_individual: str = ''):
     if not load_init_individual:  # If string is empty
         # Initialize the first individual with its sigmas vector
-        individuals = np.empty([2, rules_size], dtype=int)
+        individuals = np.empty([len(PARAMETER_RANGES), rules_size])
         sigmas = np.empty([rules_size])
 
         # TODO fit numbers
@@ -19,7 +20,7 @@ def init_experiment(rules_size, load_init_individual: str = ''):
             individuals[0][i] = round(random.gauss(0, 3000))
     else:
         individual1, sigmas = get_individual(load_init_individual)
-        individual2 = round(random.gauss(0, 3000))
+        individual2, _ = get_individual(load_init_individual)  # Será sobreescrito de todos modos
         individuals = [individual1, individual2]
 
     return individuals, sigmas
@@ -28,21 +29,20 @@ def get_individual(input_path):
     with open(input_path, "r") as input_fd:
         vals_line = input_fd.readline()
         sigma_line = input_fd.readline()
-    vals = [int(x) for x in vals_line.split(', ')]
+    vals = [float(x) for x in vals_line.split(', ')]
     sigma = [float(x) for x in sigma_line.split(', ')]
     return vals, sigma
 
 
 def save_individual(individual, sigmas, output_path):
     with open(output_path, "w+") as output_fd:
-        for i in range(len(individual)):
-            # Must be ints, not floats
-            output_fd.write(str(int(round(individual[i]))))
+        for i, val in enumerate(individual):
+            output_fd.write(str(float(val)))
             if i != len(individual)-1:
                 output_fd.write(", ")
         output_fd.write("\n")
-        for j in range(len(sigmas)):
-            output_fd.write(str(sigmas[j]))
+        for j, sd in enumerate(sigmas):
+            output_fd.write(str(sd))
             if j != len(sigmas) - 1:
                 output_fd.write(", ")
 
@@ -55,12 +55,15 @@ def fit_individual(result_path):
     return fitness
 
 def generate_individual(individual, sigmas):
-    length = len(sigmas)
-    new_individual = np.empty([length], dtype=int)
+    new_individual = np.empty([len(individual)])
 
-    for i in range(length):
-        new_individual[i] = int(round(random.gauss(individual[i], sigmas[i])))
-    
+    for i in range(len(individual)):
+        obtained_value = random.gauss(individual[i], sigmas[i])
+        # We restrict the values to the limits
+        obtained_value = min(PARAMETER_RANGES[i][1], obtained_value)
+        obtained_value = max(obtained_value, PARAMETER_RANGES[i][0])
+        new_individual[i] = obtained_value
+
     return new_individual
 
 
