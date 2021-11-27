@@ -12,10 +12,8 @@ public class SkeletonMain {
 	
     public static void main(String[] args) {
         // Uncomment this section and comment the other one to create a Solo Game
-    	int train = 3;
+    	int train = 12;
     	int agentNumber = Integer.parseInt(args[0]);
-    	System.out.println("Entré");
-		System.out.println(args[0]);
 
     	ArrayList<Float> timeResults = new ArrayList<>();
     	ArrayList<ArrayList<Integer>> diffResults = new ArrayList<>();
@@ -25,7 +23,6 @@ public class SkeletonMain {
 		// }
     	boolean simulate = true;
     	
-//    	for (int i = 0; i < 1; i++) {
     	for (int i = 0; i < train; i++) {
     		/* Solo Game */
     		SoloGameRunner gameRunner = new SoloGameRunner();
@@ -34,12 +31,11 @@ public class SkeletonMain {
     		gameRunner.setAgent(agentClass);
     		// Sets a test case
     		gameRunner.setTestCase("test"+ Integer.toString(i) +".json");
-//    		gameRunner.setTestCase("test2.json");
     		
     		// Another way to add a player for python
     		// gameRunner.setAgent("python3 Agent1.py");
     		
-    		
+
     		// Simulate
     		if (simulate) { 
     			GameResult gr = gameRunner.simulate();
@@ -50,12 +46,11 @@ public class SkeletonMain {
         		gameRunner.start();
     		}
     		
-    		
-    		
     	}
     	
-    	if (simulate) { saveResults(agentNumber, timeResults, diffResults);}
-    	
+    	if (simulate) { 
+			saveResults(agentNumber, timeResults, diffResults);
+		}
     	
     }
 
