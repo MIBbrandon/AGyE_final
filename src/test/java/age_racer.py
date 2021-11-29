@@ -55,7 +55,7 @@ if __name__ == '__main__':
     exp_number = fm.get_experiment_number()
 
     # TODO Fit paths to each computer or if need other configs
-    command_line = ''
+    command_line = 'cd /home/ingrid_amalie/Documents/Utveksling/Skoleressurser/Autumn/Algoritmos-genéticos-y-evolutivos-15755/Practices/FinalPractica/AGyE_final/ ; /usr/bin/env /usr/lib/jvm/java-12-openjdk-amd64/bin/java @/tmp/cp_97zas9182i9lux268kwj2eqfs.argfile SkeletonMain'
     args_array = [
         ' 1',
         ' 2'
