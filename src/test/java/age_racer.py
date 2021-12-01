@@ -87,12 +87,12 @@ if __name__ == '__main__':
     command_line = ''
     cwd = ''
     args_array = {
-        'padre': command_line + ' 1',
-        'hijo': command_line + ' 2'
+        'padre': command_line,
+        'hijo': command_line
     }
 
     # Files' paths
-    rules_size = 3
+    rules_size = 10
     files_config_path = {
         'padre': "./individuals_configurations/ag1.txt",
         'hijo': "./individuals_configurations/ag2.txt",
@@ -115,8 +115,9 @@ if __name__ == '__main__':
     best_iteration = 0
 
     # Start EE
-    individuals, sigmas = init_experiment(rules_size, files_config_path['padre'])
+    individuals, sigmas = init_experiment(rules_size)
     save_individual(individuals[0], sigmas, files_config_path['padre'])
+    fm.set_agent_number(1)
     s = subprocess.check_output(args_array['padre'], shell=True, cwd=cwd)
     result = fit_individual(files_result_path['padre'])
 
@@ -125,6 +126,7 @@ if __name__ == '__main__':
             # Children generation and evaluation
             individuals[1] = generate_individual(individuals[0], sigmas)
             save_individual(individuals[1], sigmas, files_config_path['hijo'])
+            fm.set_agent_number(2)
             s = subprocess.check_output(args_array['hijo'], shell=True, cwd=cwd)
             new_result = fit_individual(files_result_path['hijo'])
 

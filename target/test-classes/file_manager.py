@@ -42,3 +42,10 @@ def get_experiment_number() -> str:
 
     # Return the experiment number
     return str(exp_number)
+
+def set_agent_number(agent_number):
+    filename = 'agentnumber.txt'
+
+    # Sets agent number in file
+    with open(filename, 'w') as store:
+        store.write(str(agent_number))

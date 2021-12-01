@@ -9,9 +9,7 @@ import java.io.FileNotFoundException;
 
 public class Agent1 {
 	
-	static int agentNum = 1;
-	
-	public static ArrayList<Double> readFromFile(String inputPath) {
+	public static ArrayList<Double> readFromConfigFile(String inputPath) {
 		ArrayList<Double> config = new ArrayList<>();
 		try {
 			File configFile = new File(inputPath);
@@ -31,7 +29,26 @@ public class Agent1 {
 
 		return config;
 	}
-	
+
+	public static int readFromAgentFile() {
+        int agentNumber = 0;
+        String inputPath = "src/test/java/agentnumber.txt";
+
+        try {
+			File agentFile = new File(inputPath);
+			Scanner reader = new Scanner(agentFile);
+			agentNumber = reader.nextInt();
+
+			reader.close();
+
+		} catch (FileNotFoundException e) {
+			System.err.println("Error: while reading config file");
+			System.err.println(e);
+            System.exit(-1);
+		}
+
+        return agentNumber;
+    }
 	
 	// Vector calculating helping functions
 	static dPoint getVector(Point start, Point end) {
@@ -126,6 +143,7 @@ public class Agent1 {
     // This agent slows down from 200 to 50 when is at 4000 units before reaching the checkpoint
     public static void main(String[] args) throws Exception {
         // TODO Change var for each copy
+        int agentNum = readFromAgentFile();
         String filename = "ag"+agentNum;
 
         Scanner scanner = new Scanner(System.in);
@@ -140,7 +158,7 @@ public class Agent1 {
         int z = 0;
     	
         // Agent path for its configuration in project
-    	ArrayList<Double> config = readFromFile("src/test/java/individuals_configurations/" + filename + ".txt");
+    	ArrayList<Double> config = readFromConfigFile("src/test/java/individuals_configurations/" + filename + ".txt");
         
         
     	while (true) {

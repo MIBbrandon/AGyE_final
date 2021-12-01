@@ -13,7 +13,8 @@ public class SkeletonMain {
     public static void main(String[] args) {
         // Uncomment this section and comment the other one to create a Solo Game
     	int train = 12;
-    	int agentNumber = Integer.parseInt(args[0]);
+    	int agentNumber = Agent1.readFromAgentFile();
+
 
     	ArrayList<Float> timeResults = new ArrayList<>();
     	ArrayList<ArrayList<Integer>> diffResults = new ArrayList<>();
@@ -21,14 +22,14 @@ public class SkeletonMain {
 		// for (int i =0; i < 1 ; i++) {
 		// 	i--;
 		// }
-    	boolean simulate = true;
+    	boolean simulate = false;
     	
     	for (int i = 0; i < train; i++) {
     		/* Solo Game */
     		SoloGameRunner gameRunner = new SoloGameRunner();
     		// Sets the player
-    		Class<?> agentClass = setAgentClass(agentNumber);
-    		gameRunner.setAgent(agentClass);
+    		// Class<?> agentClass = setAgentClass(agentNumber);
+    		gameRunner.setAgent(Agent1.class);
     		// Sets a test case
     		gameRunner.setTestCase("test"+ Integer.toString(i) +".json");
     		
@@ -54,6 +55,11 @@ public class SkeletonMain {
     	
     }
 
+	/** Deprecated. Method to get agent class via agrs command
+	 * 
+	 * @param agentNumber
+	 * @return
+	 */
 	private static Class<?> setAgentClass(int agentNumber) {
 		Class<?> agentClass;
 		try {
@@ -96,10 +102,7 @@ public class SkeletonMain {
 		List<String> spacesBetween = gameResults.summaries;
 		ArrayList<Integer> steps = new ArrayList<>();
 		int counter = 0;
-		while (spacesBetween.get(counter).equals("")) {
-			counter++;
-		}
-		int lastIndex = ++counter;
+		int lastIndex = 0;
 		
 		while (counter < spacesBetween.size()) {
 			if (!spacesBetween.get(counter).equals("")) {
