@@ -143,7 +143,7 @@ public class Agent1 {
     // This agent slows down from 200 to 50 when is at 4000 units before reaching the checkpoint
     public static void main(String[] args) throws Exception {
         // TODO Change var for each copy
-        int agentNum = readFromAgentFile();
+        int agentNum = 1; // readFromAgentFile();
         String filename = "ag"+agentNum;
 
         Scanner scanner = new Scanner(System.in);

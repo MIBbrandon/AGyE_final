@@ -12,7 +12,7 @@ if set_seeds:
     np.random.seed(np_seed)
     random.seed(random_seed)
 
-num_motores = 3  # 4, 6, 10
+num_motores = 10  # 4, 6, 10
 num_motores_str = str(num_motores)  # 4, 6, 10, 10b
 
 # Nickname para que cada experimento hecho tenga un nombre más identificativo

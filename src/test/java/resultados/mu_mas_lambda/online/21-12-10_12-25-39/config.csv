@@ -1,0 +1,13 @@
+Tipo de poblacion=mu+lambda
+Seeds usadas=False
+Numero de motores=3
+Funcion usada=online
+Rango de inicializacion=(0, 360)
+Maximo numero de generaciones=10
+Poblacion=5
+Lambda=3
+Torneo=3
+Familia=2
+B=1
+Tau=0.537284965911771
+Escalar usado=False

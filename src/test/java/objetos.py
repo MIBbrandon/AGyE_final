@@ -4,7 +4,9 @@ import json
 import config
 import random
 import requests
+import subprocess
 from math import isclose
+import file_manager as fm
 import numpy as np
 
 #files_result_path = [
@@ -12,12 +14,17 @@ import numpy as np
 #    "./../experiments/ag2.json"
 #    ]
 
-command_line = ''
-cwd = ''
+
+# Gets experiment identifier number to store it
+exp_number = fm.get_experiment_number()
+
+# TODO Fit paths to each computer or if need other configs
+command_line = '/usr/bin/env /usr/lib/jvm/java-12-openjdk-amd64/bin/java @/tmp/cp_97zas9182i9lux268kwj2eqfs.argfile SkeletonMain'
+cwd = '/home/ingrid_amalie/Documents/Utveksling/Skoleressurser/Autumn/Algoritmos-genéticos-y-evolutivos-15755/Practices/FinalPractica/AGyE_final/'
 args_array = {
   'padre': command_line,
   'hijo': command_line
-  }
+}
 
 # Files' paths
 rules_size = 10
@@ -29,7 +36,20 @@ files_config_path = {
 files_result_path = {
   'padre': "./experiments/ag1.json",
   'hijo': "./experiments/ag2.json"
-   }
+}
+
+def save_individual(individual, sigmas, output_path):
+    with open(output_path, "w+") as output_fd:
+        for i, val in enumerate(individual):
+            output_fd.write(str(float(val)))
+            if i != len(individual) - 1:
+                output_fd.write(", ")
+        output_fd.write("\n")
+        for j, sd in enumerate(sigmas):
+            output_fd.write(str(sd))
+            if j != len(sigmas) - 1:
+                output_fd.write(", ")
+
 
 
 def fit_individual(result_path):
@@ -93,15 +113,22 @@ class Individuo:
         return "Fitness: " + str(self.fitness) + " | " + str(self.motores)
 
     def evaluarse(self):
-        s = subprocess.check_output(args_array['hijo'], shell=True, cwd=cwd)
+        subprocess.check_output(args_array['hijo'], shell=True, cwd=cwd)
         result = fit_individual(files_result_path['hijo'])
         r = result
         self.fitness = r
 
     def update_motores(self):
         # Damos nuevos valores a los motores según una distribución Gaussiana alrededor del valor que ya tienen
-        for i, motor in enumerate(self.motores):
+        angulos = []
+        vars_ = []
+
+        for i, (angulo, var) in enumerate(self.motores):
             self.motores[i][0] = limitador(self.motores[i][0] + np.random.normal(0, self.motores[i][1]))
+            angulos.append(angulo)
+            vars_.append(var)
+
+        save_individual(angulos, vars_, files_config_path['padre'])
         # pass
 
     def update_vars_un_quinto(self, incrementar: bool):
