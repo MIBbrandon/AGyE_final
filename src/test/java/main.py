@@ -41,6 +41,7 @@ def main():
 
             # EXTRA2) Evaluamos la población entera
             for i, individuo in enumerate(poblacion.individuos):
+                print("loop evaluarse")
                 poblacion.individuos[i].evaluarse()
 
             # Ordenamos la población

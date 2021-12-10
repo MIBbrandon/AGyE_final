@@ -13,7 +13,7 @@ public class SkeletonMain {
     public static void main(String[] args) {
         // Uncomment this section and comment the other one to create a Solo Game
     	int train = 12;
-    	int agentNumber = 1; // Agent1.readFromAgentFile();
+    	int agentNumber = Agent1.readFromAgentFile();
 
 
     	ArrayList<Float> timeResults = new ArrayList<>();

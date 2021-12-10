@@ -19,8 +19,8 @@ import numpy as np
 exp_number = fm.get_experiment_number()
 
 # TODO Fit paths to each computer or if need other configs
-command_line = '/usr/bin/env /usr/lib/jvm/java-12-openjdk-amd64/bin/java @/tmp/cp_97zas9182i9lux268kwj2eqfs.argfile SkeletonMain'
-cwd = '/home/ingrid_amalie/Documents/Utveksling/Skoleressurser/Autumn/Algoritmos-genéticos-y-evolutivos-15755/Practices/FinalPractica/AGyE_final/'
+command_line = ''
+cwd = ''
 args_array = {
   'padre': command_line,
   'hijo': command_line
