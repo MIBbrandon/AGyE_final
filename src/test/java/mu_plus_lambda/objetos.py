@@ -7,10 +7,30 @@ import requests
 from math import isclose
 import numpy as np
 
-files_result_path = [
-    "./../experiments/ag1.json",
-    "./../experiments/ag2.json"
-    ]
+#files_result_path = [
+#    "./../experiments/ag1.json",
+#    "./../experiments/ag2.json"
+#    ]
+
+command_line = ''
+cwd = ''
+args_array = {
+  'padre': command_line,
+  'hijo': command_line
+  }
+
+# Files' paths
+rules_size = 10
+files_config_path = {
+  'padre': "./individuals_configurations/ag1.txt",
+  'hijo': "./individuals_configurations/ag2.txt",
+  'mejor': "./individuals_configurations/best_" + exp_number + ".txt"
+}
+files_result_path = {
+  'padre': "./experiments/ag1.json",
+  'hijo': "./experiments/ag2.json"
+   }
+
 
 def fit_individual(result_path):
     agent = open(result_path)
@@ -73,7 +93,8 @@ class Individuo:
         return "Fitness: " + str(self.fitness) + " | " + str(self.motores)
 
     def evaluarse(self):
-        result = fit_individual(files_result_path[0])
+        s = subprocess.check_output(args_array['hijo'], shell=True, cwd=cwd)
+        result = fit_individual(files_result_path['hijo'])
         r = result
         self.fitness = r
 
