@@ -88,4 +88,3 @@ def guardar_generacion_en_evolucion(filepath: str, generacion: int, poblacion, m
         elif config.tipo_poblacion == 'mu_lambda' or config.tipo_poblacion == 'mu+lambda':
             mejor_poblacion = poblacion.get_mejor_individuo()
             f.write(f'{generacion};{mejor_global.fitness};{mejor_poblacion.fitness};{poblacion.get_media_fitness()};{mejor_global.motores};{mejor_poblacion.motores}\n')
-            print("blablabla\n\n")
