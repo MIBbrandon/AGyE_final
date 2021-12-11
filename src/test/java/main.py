@@ -26,9 +26,9 @@ def main():
         poblacion = Poblacion_mu_mas_lambda()
 
         # EXTRA) Hacer una evaluación inicial
-        # for i, individuo in enumerate(poblacion.individuos):
-        #     print("new iteration")
-        #     poblacion.individuos[i].evaluarse()
+         for i, individuo in enumerate(poblacion.individuos):
+             print("new iteration")
+             poblacion.individuos[i].evaluarse("padre")
 
         # 2) Repetir hasta cumplir criterio de convergencia
         generacion = 1
@@ -42,7 +42,7 @@ def main():
             # EXTRA2) Evaluamos la población entera
             for i, individuo in enumerate(poblacion.individuos):
                 print("loop evaluarse")
-                poblacion.individuos[i].evaluarse()
+                poblacion.individuos[i].evaluarse("hijo")
 
             # Ordenamos la población
             poblacion.ordenar_poblacion()

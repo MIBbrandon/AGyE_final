@@ -112,11 +112,17 @@ class Individuo:
     def __repr__(self):
         return "Fitness: " + str(self.fitness) + " | " + str(self.motores)
 
-    def evaluarse(self):
-        subprocess.check_output(args_array['hijo'], shell=True, cwd=cwd)
-        result = fit_individual(files_result_path['hijo'])
-        r = result
-        self.fitness = r
+    def evaluarse(str):
+    	if str == "hijo":
+        	subprocess.check_output(args_array['hijo'], shell=True, cwd=cwd)
+        	result = fit_individual(files_result_path['hijo'])
+        	r = result
+        	self.fitness = r
+        elif str == "padre":
+        	subprocess.check_output(args_array['padre'], shell=True, cwd=cwd)
+        	result = fit_individual(files_result_path['padre'])
+        	r = result
+        	self.fitness = r
 
     def update_motores(self):
         # Damos nuevos valores a los motores según una distribución Gaussiana alrededor del valor que ya tienen
