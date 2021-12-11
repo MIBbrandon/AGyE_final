@@ -41,9 +41,9 @@ def main():
 
             # EXTRA2) Evaluamos la población entera
             for i, individuo in enumerate(poblacion.individuos):
-                poblacion.individuos[i].evaluarse("hijo")
-                print(f"\t{poblacion.individuos[i]}")
-                print("\n\n")
+                poblacion.individuos[i].evaluarse()
+                # print(f"\t{poblacion.individuos[i]}")
+                # print("\n\n")
 
             # Ordenamos la población
             poblacion.ordenar_poblacion()

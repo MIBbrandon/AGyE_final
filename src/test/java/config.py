@@ -110,7 +110,7 @@ elif tipo_poblacion == "mu+lambda":
 
     max_generaciones = 10
 
-    size_poblacion = 5
+    size_poblacion = 3
     lambda_ = 3
 
     media = 0

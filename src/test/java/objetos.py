@@ -14,8 +14,8 @@ import numpy as np
 exp_number = fm.get_experiment_number()
 
 # TODO Fit paths to each computer or if need other configs
-command_line = ''
-cwd = ''
+command_line = '/usr/bin/env /usr/lib/jvm/java-12-openjdk-amd64/bin/java @/tmp/cp_97zas9182i9lux268kwj2eqfs.argfile SkeletonMain'
+cwd = '/home/ingrid_amalie/Documents/Utveksling/Skoleressurser/Autumn/Algoritmos-genéticos-y-evolutivos-15755/Practices/FinalPractica/AGyE_final/'
 args_array = {
   'padre': command_line,
   'hijo': command_line
@@ -54,26 +54,6 @@ def fit_individual(result_path):
     return fitness
 
 
-def limitador(val):
-    while val > 360:
-        val -= 360
-    while val < 0:
-        val += 360
-    return val
-
-def angulo_medio(angulos):
-    assert all([0 <= angulo <= 360 for angulo in angulos])
-
-    # Primero convertimos los ángulos a radianes
-    rad_angulos = [math.radians(angulo) for angulo in angulos]
-
-    media_sen = np.average([np.sin(rad_angulo) for rad_angulo in rad_angulos])
-    media_cos = np.average([np.cos(rad_angulo) for rad_angulo in rad_angulos])
-
-    to_return = limitador(math.degrees(np.arctan2(media_sen, media_cos)))
-    return to_return
-
-
 def funcion_local(motores):
     res = float('inf')
     if config.version == 1:
@@ -97,16 +77,19 @@ class Individuo:
     def __init__(self, motores=None):
         if motores is None:
             # Queremos que el individuo nuevo creado empieze en un punto aleatorio de los
-            self.motores = [[limitador(np.random.normal(random.uniform(*config.rango_de_inicializacion), config.sd)), config.sd] for _ in range(config.num_motores)]
+            self.motores = [[np.random.normal(random.uniform(*config.rango_de_inicializacion), config.sd), config.sd] for _ in range(config.num_motores)]
         else:
             self.motores = motores
+            for i, (val, var) in enumerate(self.motores):
+                self.motores[i] = [np.random.normal(val, var), var]
+
         self.fitness = float('inf')
         self.generacion_creada = -1  # Guarda la generación en la que se creó
 
     def __repr__(self):
         return "Fitness: " + str(self.fitness) + " | " + str(self.motores)
 
-    def evaluarse(self, str):
+    def evaluarse(self):
         # Save individual
         angulos = []
         vars_ = []
@@ -115,13 +98,14 @@ class Individuo:
             angulos.append(angulo)
             vars_.append(var)
         save_individual(angulos, vars_, files_config_path['hijo'])
-        subprocess.check_output(args_array['hijo'], shell=True, cwd=cwd)
+
+        s = subprocess.check_output(args_array['hijo'], shell=True, cwd=cwd)
         self.fitness = fit_individual(files_result_path['hijo'])
 
 
     def update_motores(self):
         for i, (motor) in enumerate(self.motores):
-            self.motores[i][0] = limitador(self.motores[i][0] + np.random.normal(0, self.motores[i][1]))
+            self.motores[i][0] = self.motores[i][0] + np.random.normal(0, self.motores[i][1])
 
 
     def update_vars_un_quinto(self, incrementar: bool):
@@ -141,9 +125,9 @@ class Individuo:
             if config.escalar_vector_resultante:
                 escalar = np.exp(np.random.normal(0, config.tau_null))
 
-            # Aplicaremos un limitador a las varianzas, pues sin ella salen varianzas exageradas
-            nueva_var = limitador(escalar * var * np.exp(np.random.normal(0, config.tau)))
+            nueva_var = escalar * var * np.exp(np.random.normal(0, config.tau))
             self.motores[i] = [angulo, nueva_var]
+
 
     def varianzas_nulas(self):
         """
@@ -183,7 +167,7 @@ class Poblacion_1_mas_1:
 
     def crear_hijo(self):
         # Limitamos el rango de los valores entre 0 y 360
-        hijo = Individuo(motores=[[limitador(self.individuos[0].motores[x][0] + np.random.normal(0, self.individuos[0].motores[x][1])), self.individuos[0].motores[x][1]] for x in range(config.num_motores)])
+        hijo = Individuo(motores=[[self.individuos[0].motores[x][0] + np.random.normal(0, self.individuos[0].motores[x][1]), self.individuos[0].motores[x][1]] for x in range(config.num_motores)])
         self.individuos.append(hijo)
 
     def ajustar_motores(self):
@@ -258,7 +242,7 @@ class Poblacion_mu_lambda:
             nuevos_motores = []
             for indice_motor in range(config.num_motores):
                 motores_padres = [padre.motores[indice_motor][0] for padre in familia]
-                nuevo_val = angulo_medio(motores_padres)
+                nuevo_val = np.average(motores_padres)
                 vars_padres = [padre.motores[indice_motor][1] for padre in familia]
                 nuevo_var = random.choice(vars_padres)
                 nuevos_motores.append([nuevo_val, nuevo_var])
@@ -278,7 +262,7 @@ class Poblacion_mu_lambda:
 
 class Poblacion_mu_mas_lambda:
     def __init__(self):
-        self.individuos = [Individuo() for _ in range(config.size_poblacion)]
+        self.individuos = [Individuo(motores=self.get_starting_individual()) for _ in range(config.size_poblacion)]
         self.torneo = Torneo(self)
         self.lambda_ = config.lambda_
 
@@ -294,6 +278,14 @@ class Poblacion_mu_mas_lambda:
                     f"\t\t{self.individuos[-2]}\n" \
                     f"\t\t{self.individuos[-1]}\n" \
                f"\tMejor individuo: {self.individuos[-1]}"
+
+    def get_starting_individual(self):
+        with open('./individuals_configurations/ag_starting.txt', 'r') as f:
+            read = f.readlines()
+        read_split = read[0].split(', ')
+        read_var_split = read[1].split(', ')
+        starting_values = [[float(val), float(var)] for val, var in zip(read_split, read_var_split)]
+        return starting_values
 
     def ordenar_poblacion(self):
         self.individuos.sort(key=lambda individuo: individuo.fitness, reverse=True)
@@ -321,7 +313,7 @@ class Poblacion_mu_mas_lambda:
             # Ahora calculamos los nuevos valores de los motores del hijo con la media de los padres y las varianzas
             nuevos_motores = []
             for indice_motor in range(config.num_motores):
-                nuevo_val = angulo_medio([padre.motores[indice_motor][0] for padre in familia])
+                nuevo_val = np.average([padre.motores[indice_motor][0] for padre in familia])
                 nuevo_var = random.choice([padre.motores[indice_motor][1] for padre in familia])
                 nuevos_motores.append([nuevo_val, nuevo_var])
 
