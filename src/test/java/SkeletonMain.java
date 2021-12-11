@@ -22,7 +22,7 @@ public class SkeletonMain {
 		// for (int i =0; i < 1 ; i++) {
 		// 	i--;
 		// }
-    	boolean simulate = false;
+    	boolean simulate = true;
     	
     	for (int i = 0; i < train; i++) {
     		/* Solo Game */

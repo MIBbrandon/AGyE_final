@@ -9,11 +9,6 @@ from math import isclose
 import file_manager as fm
 import numpy as np
 
-#files_result_path = [
-#    "./../experiments/ag1.json",
-#    "./../experiments/ag2.json"
-#    ]
-
 
 # Gets experiment identifier number to store it
 exp_number = fm.get_experiment_number()
@@ -29,13 +24,13 @@ args_array = {
 # Files' paths
 rules_size = 10
 files_config_path = {
-  'padre': "./individuals_configurations/ag1.txt",
-  'hijo': "./individuals_configurations/ag2.txt",
+  # 'padre': "./individuals_configurations/ag11.txt",
+  'hijo': "./individuals_configurations/ag1.txt",
   'mejor': "./individuals_configurations/best_" + exp_number + ".txt"
 }
 files_result_path = {
-  'padre': "./experiments/ag1.json",
-  'hijo': "./experiments/ag2.json"
+  # 'padre': "./experiments/ag11.json",
+  'hijo': "./experiments/ag1.json"
 }
 
 def save_individual(individual, sigmas, output_path):
@@ -49,7 +44,6 @@ def save_individual(individual, sigmas, output_path):
             output_fd.write(str(sd))
             if j != len(sigmas) - 1:
                 output_fd.write(", ")
-
 
 
 def fit_individual(result_path):
@@ -112,30 +106,23 @@ class Individuo:
     def __repr__(self):
         return "Fitness: " + str(self.fitness) + " | " + str(self.motores)
 
-    def evaluarse(str):
-    	if str == "hijo":
-        	subprocess.check_output(args_array['hijo'], shell=True, cwd=cwd)
-        	result = fit_individual(files_result_path['hijo'])
-        	r = result
-        	self.fitness = r
-        elif str == "padre":
-        	subprocess.check_output(args_array['padre'], shell=True, cwd=cwd)
-        	result = fit_individual(files_result_path['padre'])
-        	r = result
-        	self.fitness = r
-
-    def update_motores(self):
-        # Damos nuevos valores a los motores según una distribución Gaussiana alrededor del valor que ya tienen
+    def evaluarse(self, str):
+        # Save individual
         angulos = []
         vars_ = []
 
         for i, (angulo, var) in enumerate(self.motores):
-            self.motores[i][0] = limitador(self.motores[i][0] + np.random.normal(0, self.motores[i][1]))
             angulos.append(angulo)
             vars_.append(var)
+        save_individual(angulos, vars_, files_config_path['hijo'])
+        subprocess.check_output(args_array['hijo'], shell=True, cwd=cwd)
+        self.fitness = fit_individual(files_result_path['hijo'])
 
-        save_individual(angulos, vars_, files_config_path['padre'])
-        # pass
+
+    def update_motores(self):
+        for i, (motor) in enumerate(self.motores):
+            self.motores[i][0] = limitador(self.motores[i][0] + np.random.normal(0, self.motores[i][1]))
+
 
     def update_vars_un_quinto(self, incrementar: bool):
         for i, (angulo, var) in enumerate(self.motores):
@@ -349,9 +336,6 @@ class Poblacion_mu_mas_lambda:
         # lambdas está lleno de individuos nuevos
         # 2.5-2.6) Añadir los lambda peores de la población original por la población lambda obtenida
         self.individuos += lambdas
-
-
-
 
 
 class Torneo:
