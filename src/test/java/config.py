@@ -108,17 +108,17 @@ elif tipo_poblacion == "mu+lambda":
     # Path a donde se guardará la evolución de la población
     evolucion_filepath = common_path + 'evolucion.csv'
 
-    max_generaciones = 10
+    max_generaciones = 30
 
-    size_poblacion = 3
-    lambda_ = 3
+    size_poblacion = 5
+    lambda_ = 1
 
     media = 0
     sd = 180
 
     # Selección
-    size_torneo = 3
-    size_familia = 2
+    size_torneo = 2
+    size_familia = 1
 
     # Mutación
     b = 1

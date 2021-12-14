@@ -1,1 +1,2 @@
 Exp_number,Individual_size,Best_result,Best_iteration,Iteration,Max_epochs,Window_size,Improve_factor
+202,10,12000.0,0,14,100,5,0.1
