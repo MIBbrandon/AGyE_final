@@ -14,6 +14,7 @@ public class SkeletonMain {
         // Uncomment this section and comment the other one to create a Solo Game
     	int train = 12;
     	int agentNumber = Agent1.readFromAgentFile();
+		System.out.println("Print agentNumber1: " + Integer.toString(agentNumber));
 
 
     	ArrayList<Float> timeResults = new ArrayList<>();
@@ -50,6 +51,7 @@ public class SkeletonMain {
     	}
     	
     	if (simulate) { 
+			System.out.println("Print agentNumber2: " + Integer.toString(agentNumber));
 			saveResults(agentNumber, timeResults, diffResults);
 		}
     	
@@ -82,6 +84,7 @@ public class SkeletonMain {
     	gameResults.put("times", timeResults);
     	gameResults.put("steps", diffResults);
     	try {
+			System.out.println("Print agentNumber3: " + Integer.toString(agentNumber));
 			FileOutputStream fos = new FileOutputStream("src/test/java/experiments/ag" + agentNumber + ".json");
 			fos.write(gameResults.toString().replaceAll("=", ":").replaceAll(":", "\":").replace("{", "{\"").replace(" s", " \"s")
 					.getBytes());

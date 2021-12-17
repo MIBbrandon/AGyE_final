@@ -117,7 +117,7 @@ if __name__ == '__main__':
     # Start EE
     individuals, sigmas = init_experiment(rules_size)
     save_individual(individuals[0], sigmas, files_config_path['padre'])
-    fm.set_agent_number(1)
+    fm.set_agent_number(1)  
     s = subprocess.check_output(args_array['padre'], shell=True, cwd=cwd)
     result = fit_individual(files_result_path['padre'])
 
@@ -148,6 +148,8 @@ if __name__ == '__main__':
                 best_iteration = iteration
                 counter[index_counter % window_size] = 1
             else:
+                print("Individual 0:")
+                print(individuals[0])
                 counter[index_counter % window_size] = 0
 
             # Saves data line

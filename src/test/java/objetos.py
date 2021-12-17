@@ -9,6 +9,9 @@ from math import isclose
 import file_manager as fm
 import numpy as np
 
+PARAMETER_RANGES = (
+(0.3, 1.2), (90, 110), (0.1, 5.0), (0.0001, 0.01), (1000, 3000), (400, 800), (0.1, 5.0), (0.0001, 0.01), (0, 400),
+(150, 210))
 
 # Gets experiment identifier number to store it
 exp_number = fm.get_experiment_number()
@@ -74,6 +77,7 @@ def funcion_local(motores):
 
 
 class Individuo:
+    
     def __init__(self, motores=None):
         if motores is None:
             # Queremos que el individuo nuevo creado empieze en un punto aleatorio de los
@@ -89,6 +93,12 @@ class Individuo:
     def __repr__(self):
         return "Fitness: " + str(self.fitness) + " | " + str(self.motores)
 
+
+    def limitador(self, x, limits):
+        toReturn = max(x,limits[0])
+        toReturn = min(toReturn,limits[1])
+        return toReturn
+
     def evaluarse(self):
         # Save individual
         angulos = []
@@ -101,11 +111,11 @@ class Individuo:
 
         s = subprocess.check_output(args_array['hijo'], shell=True, cwd=cwd)
         self.fitness = fit_individual(files_result_path['hijo'])
-
+    
 
     def update_motores(self):
         for i, (motor) in enumerate(self.motores):
-            self.motores[i][0] = self.motores[i][0] + np.random.normal(0, self.motores[i][1])
+            self.motores[i][0] = self.limitador(self.motores[i][0] + np.random.normal(0, self.motores[i][1]),PARAMETER_RANGES[i])
 
 
     def update_vars_un_quinto(self, incrementar: bool):
@@ -284,7 +294,7 @@ class Poblacion_mu_mas_lambda:
             read = f.readlines()
         read_split = read[0].split(', ')
         read_var_split = read[1].split(', ')
-        starting_values = [[float(val), float(var)] for val, var in zip(read_split, read_var_split)]
+        starting_values = [[self.limitador(float(val), PARAMETER_RANGES[i]), float(var)] for i, (val, var) in enumerate(zip(read_split, read_var_split))]
         return starting_values
 
     def ordenar_poblacion(self):
@@ -300,6 +310,12 @@ class Poblacion_mu_mas_lambda:
         self.ordenar_poblacion()  # Se ordenan primero de peor a mejor
         self.individuos = self.individuos[self.lambda_:]
 
+
+    def limitador(self, x, limits):
+        toReturn = max(x,limits[0])
+        toReturn = min(toReturn,limits[1])
+        return toReturn
+        
     def crear_mutar_y_anadir_lambda(self):
         # 2.3-2.4) Crear lambda individuos
         lambdas = []  # Guardamos los individuos lambda
@@ -313,7 +329,7 @@ class Poblacion_mu_mas_lambda:
             # Ahora calculamos los nuevos valores de los motores del hijo con la media de los padres y las varianzas
             nuevos_motores = []
             for indice_motor in range(config.num_motores):
-                nuevo_val = np.average([padre.motores[indice_motor][0] for padre in familia])
+                nuevo_val = self.limitador(np.average([padre.motores[indice_motor][0] for padre in familia]), PARAMETER_RANGES[indice_motor])
                 nuevo_var = random.choice([padre.motores[indice_motor][1] for padre in familia])
                 nuevos_motores.append([nuevo_val, nuevo_var])
 
