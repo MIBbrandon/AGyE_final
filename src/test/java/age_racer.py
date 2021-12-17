@@ -17,6 +17,10 @@ def init_experiment(rules_size, load_init_individual: str = ''):
         individuals = [[random.gauss(0, 3000) for _ in range(rules_size)] for _ in range(2)]
         sigmas = [150 - i for i in range(rules_size)]
 
+        for i in range (len(individuals[0])):
+            individuals[0][i] = min(PARAMETER_RANGES[i][1],individuals[0][i])
+            individuals[0][i] = max(PARAMETER_RANGES[i][0],individuals[0][i])
+
     else:
         individual1, sigmas = get_individual(load_init_individual)
         individual2, _ = get_individual(load_init_individual)  # Será sobreescrito de todos modos
@@ -86,21 +90,15 @@ if __name__ == '__main__':
     # TODO Fit paths to each computer or if need other configs
     command_line = '/usr/bin/env /usr/lib/jvm/java-11-openjdk-amd64/bin/java @/tmp/cp_6j733ixbhd1ilmu17d7abs8pq.argfile SkeletonMain'
     cwd = '/home/aeg/AGyE_final/'
-    args_array = {
-        'padre': command_line,
-        'hijo': command_line
-    }
 
     # Files' paths
     rules_size = 10
     files_config_path = {
-        'padre': "./individuals_configurations/ag1.txt",
-        'hijo': "./individuals_configurations/ag2.txt",
+        'individuo': "./individuals_configurations/ag1.txt",
         'mejor': "./individuals_configurations/best_" + exp_number + ".txt"
     }
     files_result_path = {
-        'padre': "./experiments/ag1.json",
-        'hijo': "./experiments/ag2.json"
+        'individuo': "./experiments/ag1.json",
     }
 
     # Creates experiment log
@@ -116,19 +114,19 @@ if __name__ == '__main__':
 
     # Start EE
     individuals, sigmas = init_experiment(rules_size)
-    save_individual(individuals[0], sigmas, files_config_path['padre'])
-    fm.set_agent_number(1)  
-    s = subprocess.check_output(args_array['padre'], shell=True, cwd=cwd)
-    result = fit_individual(files_result_path['padre'])
+    save_individual(individuals[0], sigmas, files_config_path['individuo'])
+    #fm.set_agent_number(1)  
+    s = subprocess.check_output(command_line, shell=True, cwd=cwd)
+    result = fit_individual(files_result_path['individuo'])
 
     try:
         while iteration < max_epochs:
             # Children generation and evaluation
             individuals[1] = generate_individual(individuals[0], sigmas)
-            save_individual(individuals[1], sigmas, files_config_path['hijo'])
-            fm.set_agent_number(2)
-            s = subprocess.check_output(args_array['hijo'], shell=True, cwd=cwd)
-            new_result = fit_individual(files_result_path['hijo'])
+            save_individual(individuals[1], sigmas, files_config_path['individuo'])
+            # fm.set_agent_number(2)
+            s = subprocess.check_output(command_line, shell=True, cwd=cwd)
+            new_result = fit_individual(files_result_path['individuo'])
 
             # Trace print
             print("********************")
@@ -142,14 +140,12 @@ if __name__ == '__main__':
                 print(individuals[1])
                 individuals[0] = individuals[1]
                 # Guardamos al hijo como si fuera el padre
-                save_individual(individuals[0], sigmas, files_config_path['padre'])
+                # save_individual(individuals[0], sigmas, files_config_path['padre'])
                 print("New result: ", new_result)
                 result = new_result
                 best_iteration = iteration
                 counter[index_counter % window_size] = 1
             else:
-                print("Individual 0:")
-                print(individuals[0])
                 counter[index_counter % window_size] = 0
 
             # Saves data line
