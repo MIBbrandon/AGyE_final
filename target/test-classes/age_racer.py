@@ -1,4 +1,3 @@
-import os
 import subprocess
 import sys
 import file_manager as fm

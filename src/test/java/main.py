@@ -1,9 +1,8 @@
-# P2 - Estrategias evolutivas
+# P3 - Mu Mas Lambda
 import copy
 import time
-import os
 
-from objetos import Individuo, Poblacion_1_mas_1, Poblacion_mu_lambda, Poblacion_mu_mas_lambda
+from objetos import Individuo, Poblacion_mu_mas_lambda
 import config
 import saver
 
@@ -25,25 +24,19 @@ def main():
         # 1) Generar aleatoriamente un vector de números reales y sus varianzas. Las varianzas tomarán valores grandes
         poblacion = Poblacion_mu_mas_lambda()
 
-        # EXTRA) Hacer una evaluación inicial
-        # for i, individuo in enumerate(poblacion.individuos):
-          #    poblacion.individuos[i].evaluarse("padre")
-            #  print(f"\tfitness: {poblacion.individuos[i]}")
-
         # 2) Repetir hasta cumplir criterio de convergencia
         generacion = 1
         convergencia = False
         while not convergencia and generacion <= config.max_generaciones:
             print(f"Generación {generacion}:")
             print(f"Mejor individuo global: {mejor_individuo_global}")
+
             # 2.2-2.3) Crear lambda individuos y añadir
             poblacion.crear_mutar_y_anadir_lambda()
 
             # EXTRA2) Evaluamos la población entera
             for i, individuo in enumerate(poblacion.individuos):
                 poblacion.individuos[i].evaluarse()
-                # print(f"\t{poblacion.individuos[i]}")
-                # print("\n\n")
 
             # Ordenamos la población
             poblacion.ordenar_poblacion()

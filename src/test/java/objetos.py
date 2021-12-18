@@ -1,40 +1,23 @@
-import math
 from typing import Union
 import json
 import config
 import random
-import requests
 import subprocess
 from math import isclose
-import file_manager as fm
 import numpy as np
 
 PARAMETER_RANGES = (
 (0.3, 1.2), (90, 110), (0.1, 5.0), (0.0001, 0.01), (1000, 3000), (400, 800), (0.1, 5.0), (0.0001, 0.01), (0, 400),
 (150, 210))
 
-# Gets experiment identifier number to store it
-exp_number = fm.get_experiment_number()
-
 # TODO Fit paths to each computer or if need other configs
 command_line = '/usr/bin/env /usr/lib/jvm/java-11-openjdk-amd64/bin/java @/tmp/cp_7c0lmj2jd1cq9jhk4phi5edyk.argfile SkeletonMain'
 cwd = '/home/cesar/Uni/AGE/e3/AGyE_final'
-args_array = {
-  'padre': command_line,
-  'hijo': command_line
-}
 
 # Files' paths
 rules_size = 10
-files_config_path = {
-  # 'padre': "./individuals_configurations/ag11.txt",
-  'hijo': "./individuals_configurations/ag1.txt",
-  'mejor': "./individuals_configurations/best_" + exp_number + ".txt"
-}
-files_result_path = {
-  # 'padre': "./experiments/ag11.json",
-  'hijo': "./experiments/ag1.json"
-}
+files_config_path = "./individuals_configurations/ag1.txt"
+files_result_path = "./experiments/ag1.json"
 
 def save_individual(individual, sigmas, output_path):
     with open(output_path, "w+") as output_fd:
@@ -55,25 +38,6 @@ def fit_individual(result_path):
 
     fitness = np.sum(agentData['times'])
     return fitness
-
-
-def funcion_local(motores):
-    res = float('inf')
-    if config.version == 1:
-        res = 0
-        for i, (angulo, var) in enumerate(motores):
-            if config.num_motores == 4:
-                angulo_objetivo = config.angulos_optimos_4[i]
-            elif config.num_motores == 10:
-                angulo_objetivo = config.angulos_optimos_10[i]
-            res += (angulo - angulo_objetivo)**2
-    elif config.version == 2:
-        res = abs(sum([angulo for angulo, var in motores]) - config.suma_total)
-    elif config.version == 3:
-        res = abs(np.prod([angulo for angulo, var in motores]) - config.prod_total)
-    if config.ruido:
-        res += abs(np.random.normal(0, config.sd_ruido))
-    return res
 
 
 class Individuo:
@@ -107,10 +71,10 @@ class Individuo:
         for i, (angulo, var) in enumerate(self.motores):
             angulos.append(angulo)
             vars_.append(var)
-        save_individual(angulos, vars_, files_config_path['hijo'])
+        save_individual(angulos, vars_, files_config_path)
 
-        s = subprocess.check_output(args_array['hijo'], shell=True, cwd=cwd)
-        self.fitness = fit_individual(files_result_path['hijo'])
+        s = subprocess.check_output(command_line, shell=True, cwd=cwd)
+        self.fitness = fit_individual(files_result_path)
     
 
     def update_motores(self):
@@ -152,62 +116,6 @@ class Individuo:
     def boost_varianzas(self):
         for i, (angulo, var) in enumerate(self.motores):
             self.motores[i] = [angulo, config.sd * config.boost_proporcion]
-
-
-
-class Poblacion_1_mas_1:
-    def _init_(self):
-        self.individuos = [Individuo()]  # El primero es el padre, el segundo es el hijo
-        self.counter_reemplazos = 0
-        self.s = config.s
-
-    def _repr_(self):
-        return f"Padre: {self.individuos[0]}\nHijo {self.individuos[1]}"
-
-    def decidir_si_reemplazar_padre(self, generacion):
-        delta = self.individuos[1].fitness - self.individuos[0].fitness  # Hijo - padre (menor es mejor)
-        if delta < 0 and abs(delta) > config.epsilon:
-            print("REEMPLAZO")
-            # Si el hijo.fitness es mejor que padre.fitness y por una diferencia notable, reemplazamos
-            self.counter_reemplazos += 1
-            self.individuos.pop(0)  # Eliminar padre
-            self.individuos[0].generacion_creada = generacion  # Para saber cuándo se creó
-        else:
-            self.individuos.pop(1)  # Eliminar hijo
-
-    def crear_hijo(self):
-        # Limitamos el rango de los valores entre 0 y 360
-        hijo = Individuo(motores=[[self.individuos[0].motores[x][0] + np.random.normal(0, self.individuos[0].motores[x][1]), self.individuos[0].motores[x][1]] for x in range(config.num_motores)])
-        self.individuos.append(hijo)
-
-    def ajustar_motores(self):
-        # DEPRECATED, empeora los resultados en la estrategia 1+1, y no se usa
-        for i in range(len(self.individuos)):
-            self.individuos[i].update_motores()
-
-    def ajustar_varianzas(self):
-        # Obtenemos la proporción de veces que ha mejorado el individuo
-        res = self.counter_reemplazos/self.s
-        # Aplicamos la regla del 1/5
-        if res < 0.2:
-            print("VARIANZAS DECREMENTAN")
-            # c * var
-            self.individuos[0].update_vars_un_quinto(incrementar=False)
-        elif res > 0.2:
-            print("VARIANZAS INCREMENTAN")
-            # var / c
-            self.individuos[0].update_vars_un_quinto(incrementar=True)
-        # Si es igual, no se modifican las varianzas
-
-        # Con las varianzas ajustadas, reseteamos el contador
-        self.counter_reemplazos = 0
-
-    def varianzas_nulas(self):
-        return self.individuos[0].varianzas_nulas()
-
-    def boost_varianzas(self):
-        for i, individuo in enumerate(self.individuos):
-            self.individuos[i].boost_varianzas()
 
 
 class Poblacion_mu_lambda:
