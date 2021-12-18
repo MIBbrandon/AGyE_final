@@ -2,7 +2,7 @@
 import copy
 import time
 
-from objetos import Individuo, Poblacion_mu_mas_lambda
+from objects import Individuo, Poblacion_mu_mas_lambda
 import config
 import saver
 
