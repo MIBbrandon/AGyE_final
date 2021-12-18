@@ -42,20 +42,20 @@ def fit_individual(result_path):
 
 class Individuo:
     
-    def __init__(self, motores=None):
-        if motores is None:
+    def __init__(self, genes=None):
+        if genes is None:
             # Queremos que el individuo nuevo creado empieze en un punto aleatorio de los
-            self.motores = [[np.random.normal(random.uniform(*config.rango_de_inicializacion), config.sd), config.sd] for _ in range(config.num_motores)]
+            self.genes = [[np.random.normal(random.uniform(*config.rango_de_inicializacion), config.sd), config.sd] for _ in range(config.num_genes)]
         else:
-            self.motores = motores
-            for i, (val, var) in enumerate(self.motores):
-                self.motores[i] = [np.random.normal(val, var), var]
+            self.genes = genes
+            for i, (val, var) in enumerate(self.genes):
+                self.genes[i] = [np.random.normal(val, var), var]
 
         self.fitness = float('inf')
         self.generacion_creada = -1  # Guarda la generación en la que se creó
 
     def __repr__(self):
-        return "Fitness: " + str(self.fitness) + " | " + str(self.motores)
+        return "Fitness: " + str(self.fitness) + " | " + str(self.genes)
 
 
     def limitador(self, x, limits):
@@ -65,42 +65,42 @@ class Individuo:
 
     def evaluarse(self):
         # Save individual
-        angulos = []
+        genes = []
         vars_ = []
 
-        for i, (angulo, var) in enumerate(self.motores):
-            angulos.append(angulo)
+        for i, (gen, var) in enumerate(self.genes):
+            genes.append(gen)
             vars_.append(var)
-        save_individual(angulos, vars_, files_config_path)
+        save_individual(genes, vars_, files_config_path)
 
         s = subprocess.check_output(command_line, shell=True, cwd=cwd)
         self.fitness = fit_individual(files_result_path)
     
 
-    def update_motores(self):
-        for i, (motor) in enumerate(self.motores):
-            self.motores[i][0] = self.limitador(self.motores[i][0] + np.random.normal(0, self.motores[i][1]),PARAMETER_RANGES[i])
+    def update_genes(self):
+        for i, (motor) in enumerate(self.genes):
+            self.genes[i][0] = self.limitador(self.genes[i][0] + np.random.normal(0, self.genes[i][1]),PARAMETER_RANGES[i])
 
 
     def update_vars_un_quinto(self, incrementar: bool):
-        for i, (angulo, var) in enumerate(self.motores):
+        for i, (gen, var) in enumerate(self.genes):
             if not incrementar:
                 # Varianza decrece
                 new_var = var * config.c
             else:
                 # Varianza crece
                 new_var = var / config.c
-            self.motores[i] = [angulo, new_var]
+            self.genes[i] = [gen, new_var]
 
     def update_vars_gauss(self):
         # Nuevas varianzas obtenidas según esquema Gaussiano
-        for i, (angulo, var) in enumerate(self.motores):
+        for i, (gen, var) in enumerate(self.genes):
             escalar = 1
             if config.escalar_vector_resultante:
                 escalar = np.exp(np.random.normal(0, config.tau_null))
 
             nueva_var = escalar * var * np.exp(np.random.normal(0, config.tau))
-            self.motores[i] = [angulo, nueva_var]
+            self.genes[i] = [gen, nueva_var]
 
 
     def varianzas_nulas(self):
@@ -108,14 +108,14 @@ class Individuo:
         Determina si las varianzas son nulas (es decir, que ya está muy cerca de la solución)
         :return:
         """
-        for angulo, var in self.motores:
+        for gen, var in self.genes:
             if not isclose(var, 0, abs_tol=0.01):
                 return False
         return True
 
     def boost_varianzas(self):
-        for i, (angulo, var) in enumerate(self.motores):
-            self.motores[i] = [angulo, config.sd * config.boost_proporcion]
+        for i, (gen, var) in enumerate(self.genes):
+            self.genes[i] = [gen, config.sd * config.boost_proporcion]
 
 
 class Poblacion_mu_lambda:
@@ -151,24 +151,24 @@ class Poblacion_mu_lambda:
         lambdas = []  # Guardamos los individuos lambda
         while len(lambdas) < self.lambda_:
             # CREACIÓN
-            nuevo_individuo = Individuo()  # Nuevo individuo al que le daremos nuevos valores de motores y varianzas
+            nuevo_individuo = Individuo()  # Nuevo individuo al que le daremos nuevos valores de genes y varianzas
             familia = []  # Individuos que compondrán la familia
             for _ in range(config.size_familia):
                 familia.append(self.torneo.obtener_ganador())
 
-            # Ahora calculamos los nuevos valores de los motores del hijo con la media de los padres y las varianzas
-            nuevos_motores = []
-            for indice_motor in range(config.num_motores):
-                motores_padres = [padre.motores[indice_motor][0] for padre in familia]
-                nuevo_val = np.average(motores_padres)
-                vars_padres = [padre.motores[indice_motor][1] for padre in familia]
+            # Ahora calculamos los nuevos valores de los genes del hijo con la media de los padres y las varianzas
+            nuevos_genes = []
+            for indice_motor in range(config.num_genes):
+                genes_padres = [padre.genes[indice_motor][0] for padre in familia]
+                nuevo_val = np.average(genes_padres)
+                vars_padres = [padre.genes[indice_motor][1] for padre in familia]
                 nuevo_var = random.choice(vars_padres)
-                nuevos_motores.append([nuevo_val, nuevo_var])
+                nuevos_genes.append([nuevo_val, nuevo_var])
 
-            nuevo_individuo.motores = nuevos_motores
+            nuevo_individuo.genes = nuevos_genes
 
             # MUTACIÓN
-            nuevo_individuo.update_motores()  # Motores se mutan según la distribución Gaussiana
+            nuevo_individuo.update_genes()  # genes se mutan según la distribución Gaussiana
             nuevo_individuo.update_vars_gauss()
 
             lambdas.append(nuevo_individuo)
@@ -180,7 +180,7 @@ class Poblacion_mu_lambda:
 
 class Poblacion_mu_mas_lambda:
     def __init__(self):
-        self.individuos = [Individuo(motores=self.get_starting_individual()) for _ in range(config.size_poblacion)]
+        self.individuos = [Individuo(genes=self.get_starting_individual()) for _ in range(config.size_poblacion)]
         self.torneo = Torneo(self)
         self.lambda_ = config.lambda_
 
@@ -229,22 +229,22 @@ class Poblacion_mu_mas_lambda:
         lambdas = []  # Guardamos los individuos lambda
         while len(lambdas) < self.lambda_:
             # CREACIÓN
-            nuevo_individuo = Individuo()  # Nuevo individuo al que le daremos nuevos valores de motores y varianzas
+            nuevo_individuo = Individuo()  # Nuevo individuo al que le daremos nuevos valores de genes y varianzas
             familia = []  # Individuos que compondrán la familia
             for _ in range(config.size_familia):
                 familia.append(self.torneo.obtener_ganador())
 
-            # Ahora calculamos los nuevos valores de los motores del hijo con la media de los padres y las varianzas
-            nuevos_motores = []
-            for indice_motor in range(config.num_motores):
-                nuevo_val = self.limitador(np.average([padre.motores[indice_motor][0] for padre in familia]), PARAMETER_RANGES[indice_motor])
-                nuevo_var = random.choice([padre.motores[indice_motor][1] for padre in familia])
-                nuevos_motores.append([nuevo_val, nuevo_var])
+            # Ahora calculamos los nuevos valores de los genes del hijo con la media de los padres y las varianzas
+            nuevos_genes = []
+            for indice_motor in range(config.num_genes):
+                nuevo_val = self.limitador(np.average([padre.genes[indice_motor][0] for padre in familia]), PARAMETER_RANGES[indice_motor])
+                nuevo_var = random.choice([padre.genes[indice_motor][1] for padre in familia])
+                nuevos_genes.append([nuevo_val, nuevo_var])
 
-            nuevo_individuo.motores = nuevos_motores
+            nuevo_individuo.genes = nuevos_genes
 
             # MUTACIÓN
-            nuevo_individuo.update_motores()  # Motores se mutan según la distribución Gaussiana
+            nuevo_individuo.update_genes()  # genes se mutan según la distribución Gaussiana
             nuevo_individuo.update_vars_gauss()
 
             lambdas.append(nuevo_individuo)

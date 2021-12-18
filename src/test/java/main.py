@@ -65,7 +65,7 @@ def main():
         print(mejor_individuo_global)
 
     end_time = time.time()
-    saver.adjuntar_resultado(config.config_filepath, mejor_individuo_global.fitness, mejor_individuo_global.motores,
+    saver.adjuntar_resultado(config.config_filepath, mejor_individuo_global.fitness, mejor_individuo_global.genes,
                              mejor_individuo_global.generacion_creada, end_time - start_time)
 
 
