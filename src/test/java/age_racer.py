@@ -88,8 +88,8 @@ if __name__ == '__main__':
     exp_number = fm.get_experiment_number()
 
     # TODO Fit paths to each computer or if need other configs
-    command_line = '/usr/bin/env /usr/lib/jvm/java-11-openjdk-amd64/bin/java @/tmp/cp_6j733ixbhd1ilmu17d7abs8pq.argfile SkeletonMain'
-    cwd = '/home/aeg/AGyE_final/'
+    command_line = '/usr/bin/env /usr/lib/jvm/java-11-openjdk-amd64/bin/java @/tmp/cp_7c0lmj2jd1cq9jhk4phi5edyk.argfile SkeletonMain'
+    cwd = '/home/cesar/Uni/AGE/e3/AGyE_final'
 
     # Files' paths
     rules_size = 10
