@@ -97,9 +97,7 @@ if __name__ == '__main__':
         'individuo': "./individuals_configurations/ag1.txt",
         'mejor': "./individuals_configurations/best_" + exp_number + ".txt"
     }
-    files_result_path = {
-        'individuo': "./experiments/ag1.json",
-    }
+    files_result_path = "./experiments/ag1.json"
 
     # Creates experiment log
     experiment = []
@@ -115,18 +113,17 @@ if __name__ == '__main__':
     # Start EE
     individuals, sigmas = init_experiment(rules_size)
     save_individual(individuals[0], sigmas, files_config_path['individuo'])
-    #fm.set_agent_number(1)  
+    fm.set_agent_number(1)  
     s = subprocess.check_output(command_line, shell=True, cwd=cwd)
-    result = fit_individual(files_result_path['individuo'])
+    result = fit_individual(files_result_path)
 
     try:
         while iteration < max_epochs:
             # Children generation and evaluation
             individuals[1] = generate_individual(individuals[0], sigmas)
             save_individual(individuals[1], sigmas, files_config_path['individuo'])
-            # fm.set_agent_number(2)
             s = subprocess.check_output(command_line, shell=True, cwd=cwd)
-            new_result = fit_individual(files_result_path['individuo'])
+            new_result = fit_individual(files_result_path)
 
             # Trace print
             print("********************")
@@ -138,9 +135,8 @@ if __name__ == '__main__':
             # Better result update individual
             if new_result < result:
                 print(individuals[1])
-                individuals[0] = individuals[1]
                 # Guardamos al hijo como si fuera el padre
-                # save_individual(individuals[0], sigmas, files_config_path['padre'])
+                individuals[0] = individuals[1]
                 print("New result: ", new_result)
                 result = new_result
                 best_iteration = iteration

@@ -19,16 +19,12 @@ public class SkeletonMain {
     	ArrayList<Float> timeResults = new ArrayList<>();
     	ArrayList<ArrayList<Integer>> diffResults = new ArrayList<>();
 
-		// for (int i =0; i < 1 ; i++) {
-		// 	i--;
-		// }
     	boolean simulate = true;
     	
     	for (int i = 0; i < train; i++) {
     		/* Solo Game */
     		SoloGameRunner gameRunner = new SoloGameRunner();
     		// Sets the player
-    		// Class<?> agentClass = setAgentClass(agentNumber);
     		gameRunner.setAgent(Agent1.class);
     		// Sets a test case
     		gameRunner.setTestCase("test"+ Integer.toString(i) +".json");
@@ -54,23 +50,6 @@ public class SkeletonMain {
 		}
     	
     }
-
-	/** Deprecated. Method to get agent class via agrs command
-	 * 
-	 * @param agentNumber
-	 * @return
-	 */
-	private static Class<?> setAgentClass(int agentNumber) {
-		Class<?> agentClass;
-		try {
-			agentClass = Class.forName("Agent" + agentNumber);
-		} catch (ClassNotFoundException e) {
-			System.err.println("Error: while loading class file");
-			System.err.println(e);
-			agentClass = Agent1.class;
-		}
-		return agentClass;
-	}
 
     /** Gets experiments results, storing it in a HashMap. Later it rewrite it to save in a json file
      * 
