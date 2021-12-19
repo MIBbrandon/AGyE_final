@@ -13,7 +13,7 @@ public class SkeletonMain {
     public static void main(String[] args) {
         // Uncomment this section and comment the other one to create a Solo Game
     	int train = 12;
-    	int agentNumber = Agent1.readFromAgentFile();
+    	int agentNumber = 1;
 
 
     	ArrayList<Float> timeResults = new ArrayList<>();
@@ -27,7 +27,7 @@ public class SkeletonMain {
     		// Sets the player
     		gameRunner.setAgent(Agent1.class);
     		// Sets a test case
-    		gameRunner.setTestCase("test"+ Integer.toString(i) +".json");
+    		gameRunner.setTestCase("train"+ Integer.toString(i) +".json");
     		
     		// Another way to add a player for python
     		// gameRunner.setAgent("python3 Agent1.py");

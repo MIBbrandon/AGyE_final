@@ -2,33 +2,7 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-
-
-
-public class Agent1 {
-	
-	public static ArrayList<Double> readFromConfigFile(String inputPath) {
-		ArrayList<Double> config = new ArrayList<>();
-		try {
-			File configFile = new File(inputPath);
-			Scanner reader = new Scanner(configFile);
-			String[] str_config = reader.nextLine().split(", ");
-
-			for(String i : str_config) {
-				config.add(Double.parseDouble(i));
-			}
-
-			reader.close();
-
-		} catch (FileNotFoundException e) {
-			System.err.println("Error: while reading config file");
-			System.err.println(e);
-		}
-
-		return config;
-	}
+public class BestAgent {
 	
 	// Vector calculating helping functions
 	static dPoint getVector(Point start, Point end) {
@@ -123,7 +97,6 @@ public class Agent1 {
     // This agent slows down from 200 to 50 when is at 4000 units before reaching the checkpoint
     public static void main(String[] args) throws Exception {
         int agentNum = 1;
-        String filename = "ag"+agentNum;
 
         Scanner scanner = new Scanner(System.in);
         int checkpoints = Integer.parseInt(scanner.nextLine());
@@ -136,10 +109,6 @@ public class Agent1 {
         double dist = 100000.0;
         int z = 0;
     	
-        // Agent path for its configuration in project
-    	ArrayList<Double> config = readFromConfigFile("src/test/java/individuals_configurations/" + filename + ".txt");
-        
-        
     	while (true) {
     		String s = scanner.nextLine();
             System.err.println(s);
@@ -159,21 +128,21 @@ public class Agent1 {
             
 
             // Parameters we control
-            double focus_angle = config.get(0);  // Math.PI/2  Essentially the cone in which the checkpoint must be in wrt the velocity vector
-            double corrective_thrust = config.get(1);  // 100  The fixed amount of thrust used when correcting the velocity vector
+            double focus_angle = 0.7911999561915962;  // Math.PI/2  Essentially the cone in which the checkpoint must be in wrt the velocity vector
+            double corrective_thrust = 100.00086605729844;  // 100  The fixed amount of thrust used when correcting the velocity vector
             
             // Offset related
             
-            double scale_offset = config.get(2);  // 1   This must be adjusted depending on the value of the angles
-            double step_constant_offset = config.get(3);  // 0.002   Steepness (or rate of change)
-            double midpoint_val_offset = config.get(4); // 2000   Value of all_influences at which sigmoid result is half of max_offset
-            double max_offset = config.get(5);  // 600   Maximum offset allowed
+            double scale_offset = 1.2788584672993624;  // 1   This must be adjusted depending on the value of the angles
+            double step_constant_offset = 0.05;  // 0.002   Steepness (or rate of change)
+            double midpoint_val_offset = 1996.4610714844407; // 2000   Value of all_influences at which sigmoid result is half of max_offset
+            double max_offset = 749.0716767918675;  // 600   Maximum offset allowed
             
             // Thrust related
-            double scale_thrust = config.get(6);  // 1   Scales all the influences accordingly
-            double step_constant_thrust = config.get(7);  // 0.005   Steepness (or rate of change)
-            double midpoint_val_thrust = config.get(8);  // 200   Value of all_influences at which sigmoid result is half of max_thrust
-            double max_thrust = config.get(9);  // 200 This one we will leave at maximum because we prefer to change other variables first
+            double scale_thrust = 3.435866104425008;  // 1   Scales all the influences accordingly
+            double step_constant_thrust = 0.01;  // 0.005   Steepness (or rate of change)
+            double midpoint_val_thrust = 400.0;  // 200   Value of all_influences at which sigmoid result is half of max_thrust
+            double max_thrust = 197.56703310176778;  // 200 This one we will leave at maximum because we prefer to change other variables first
 
             // -- LOGIC --
             
@@ -208,11 +177,15 @@ public class Agent1 {
             double angle_to_next_checkpoint = angle_to_next_checkpoint(current, new_first_checkpoint, second_checkpoint);
             double angle_influence = Math.abs(Math.PI - Math.abs(angle_to_next_checkpoint));  // The closer to pi, the smaller the offset
             if (angle_to_next_checkpoint <= 0) {
-            	// Angle is greater than pi radians, which means ship must first go left before going right
+                // Angle is greater than pi radians, which means ship must first go left before going right
             	// Therefore, we must flip the vector
             	rotated.x = -rotated.x;
             	rotated.y = -rotated.y;
             }
+            
+            // The faster we are going, the less thrust we need to add
+            double speed = magnitude(vx, vy);
+            double speed_influence = (1 / (1 + (speed/1000)));
             
             // The further the checkpoint is, the greater the offset can be
             double distance_influence = new_first_checkpoint.distance(current);
@@ -221,7 +194,7 @@ public class Agent1 {
             double all_influences = distance_influence * angle_influence * scale_offset;
             
             // We obtain the final scaling of the unit vector, contained in a finite range from 0 to 600
-            double final_scaling = sigmoid(all_influences, max_offset, step_constant_offset, midpoint_val_offset);
+            double final_scaling = sigmoid(all_influences, max_offset, step_constant_offset, midpoint_val_offset) * speed_influence;
             
             // We apply the scaling
             dPoint scaled = scale(rotated, final_scaling);
@@ -239,10 +212,6 @@ public class Agent1 {
             
             // The greater the distance between the first checkpoint and the second one, the higher the thrust
             double distance_to_next_target = new_first_checkpoint.distance(second_checkpoint);
-            
-            // The faster we are going, the less thrust we need to add
-            double speed = magnitude(vx, vy);
-            double speed_influence = (1 / (1 + (speed/1000)));
             
             // We multiply all the influences
             double all_thrust_influences = thrust_angle_influence * distance_to_next_target * scale_thrust;

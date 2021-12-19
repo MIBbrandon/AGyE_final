@@ -11,8 +11,8 @@ PARAMETER_RANGES = (
 (150, 210))
 
 # TODO Fit paths to each computer or if need other configs
-command_line = '/usr/bin/env /usr/lib/jvm/java-11-openjdk-amd64/bin/java @/tmp/cp_7c0lmj2jd1cq9jhk4phi5edyk.argfile SkeletonMain'
-cwd = '/home/cesar/Uni/AGE/e3/AGyE_final'
+command_line = ''
+cwd = ''
 
 # Files' paths
 rules_size = 10
